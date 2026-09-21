@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Course, AdmissionApplication } from '../types';
 import { COURSES_DATA } from '../data/coursesData';
 import { SAMPLE_CERTIFICATES } from '../data/certificatesData';
+import { FileUploadField, UploadedFileMeta } from './FileUploadField';
 
 interface AdmissionsScreenProps {
   initialCourseCode?: string;
@@ -32,6 +33,19 @@ export const AdmissionsScreen: React.FC<AdmissionsScreenProps> = ({
     agreedToTerms: false
   });
 
+  // Document Uploads State
+  const [photoFile, setPhotoFile] = useState<UploadedFileMeta | null>(null);
+  const [qualificationDocFile, setQualificationDocFile] = useState<UploadedFileMeta | null>(null);
+  const [addressProofFile, setAddressProofFile] = useState<UploadedFileMeta | null>(null);
+
+  // Modal for previewing uploaded documents
+  const [previewDocModal, setPreviewDocModal] = useState<{
+    title: string;
+    url: string;
+    name: string;
+    isPdf?: boolean;
+  } | null>(null);
+
   const [submittedApplication, setSubmittedApplication] = useState<AdmissionApplication | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -51,10 +65,61 @@ export const AdmissionsScreen: React.FC<AdmissionsScreenProps> = ({
     }
   };
 
+  const handleLoadDemoData = () => {
+    setFormData({
+      fullName: 'JITUMONI SAIKIA',
+      guardianName: 'BIPUL SAIKIA',
+      dob: '2004-06-15',
+      gender: 'Male',
+      phone: '9854084221',
+      email: 'jitumoni.kaliabor@gmail.com',
+      address: 'Vill: Kuwaritol, PO: Kaliabor, Dist: Nagaon, Assam - 782137',
+      qualification: 'Higher Secondary (Arts/Sc/Com)',
+      courseId: 'adca',
+      affiliation: 'AMTRON Affiliated',
+      batch: 'Morning (8:00 AM – 10:00 AM)',
+      agreedToTerms: true
+    });
+    setPhotoFile({
+      file: new File(['demo'], 'jitumoni_photo.jpg', { type: 'image/jpeg' }),
+      previewUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&auto=format&fit=crop&q=80',
+      name: 'jitumoni_passport_photo.jpg',
+      size: '148 KB',
+      isPdf: false
+    });
+    setQualificationDocFile({
+      file: new File(['demo'], 'hs_marksheet.jpg', { type: 'image/jpeg' }),
+      previewUrl: 'https://images.unsplash.com/photo-1589330694653-dad6d3240a2f?w=600&auto=format&fit=crop&q=80',
+      name: 'ahsec_higher_secondary_marksheet.jpg',
+      size: '520 KB',
+      isPdf: false
+    });
+    setAddressProofFile({
+      file: new File(['demo'], 'aadhaar_card.jpg', { type: 'image/jpeg' }),
+      previewUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600&auto=format&fit=crop&q=80',
+      name: 'aadhaar_card_kaliabor.jpg',
+      size: '340 KB',
+      isPdf: false
+    });
+    onShowToast('Filled demo candidate details with photo & verification docs!');
+  };
+
   const handleAdmissionSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.fullName.trim() || !formData.phone.trim()) {
       onShowToast('Please fill out the candidate name and mobile number.');
+      return;
+    }
+    if (!photoFile) {
+      onShowToast('Please upload the candidate passport photograph.');
+      return;
+    }
+    if (!qualificationDocFile) {
+      onShowToast('Please upload your highest qualification marksheet / certificate.');
+      return;
+    }
+    if (!addressProofFile) {
+      onShowToast('Please upload your permanent address proof document.');
       return;
     }
     if (!formData.agreedToTerms) {
@@ -92,7 +157,15 @@ export const AdmissionsScreen: React.FC<AdmissionsScreenProps> = ({
           day: '2-digit',
           month: 'short',
           year: 'numeric'
-        })
+        }),
+        photoUrl: photoFile.previewUrl,
+        photoName: photoFile.name,
+        qualificationDocName: qualificationDocFile.name,
+        qualificationDocUrl: qualificationDocFile.previewUrl,
+        qualificationDocIsPdf: qualificationDocFile.isPdf,
+        addressProofName: addressProofFile.name,
+        addressProofUrl: addressProofFile.previewUrl,
+        addressProofIsPdf: addressProofFile.isPdf
       };
 
       setSubmittedApplication(newApp);
@@ -134,7 +207,7 @@ export const AdmissionsScreen: React.FC<AdmissionsScreenProps> = ({
             duration: 'Active Session',
             examDate: 'Scheduled 2025',
             issueDate: 'Provisional Reg Issued',
-            photoUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBnLHFROFHdPNsOEU1ON59b41RcDEDIyCxH9pyWOwbdUvaFlJZDs0t80XLMR2EDPH44TeJbHrTGmCx1eXqPjjd6x6vFJMZnUGjSnWIVpf4Wnbv6sVpIxoOqXPi_AJPsS_BhEMN5KWdmjlXFo16dWyHhiFUyto_tO4J0XalfNrnB3e0pwG7Erju1ORDwePloRj29a6C87_Jx54wE8Ls9oVbDx2QXCfaBLu40wPLWthZ-qWymF-GC7FY',
+            photoUrl: submittedApplication.photoUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuBnLHFROFHdPNsOEU1ON59b41RcDEDIyCxH9pyWOwbdUvaFlJZDs0t80XLMR2EDPH44TeJbHrTGmCx1eXqPjjd6x6vFJMZnUGjSnWIVpf4Wnbv6sVpIxoOqXPi_AJPsS_BhEMN5KWdmjlXFo16dWyHhiFUyto_tO4J0XalfNrnB3e0pwG7Erju1ORDwePloRj29a6C87_Jx54wE8Ls9oVbDx2QXCfaBLu40wPLWthZ-qWymF-GC7FY',
             status: 'Active & Validated'
           });
           onShowToast('Active Enrollee Record Verified!');
@@ -215,24 +288,60 @@ export const AdmissionsScreen: React.FC<AdmissionsScreenProps> = ({
                   </div>
                 </div>
                 <button
-                  onClick={() => setSubmittedApplication(null)}
+                  onClick={() => {
+                    setSubmittedApplication(null);
+                    setPhotoFile(null);
+                    setQualificationDocFile(null);
+                    setAddressProofFile(null);
+                    setFormData({
+                      fullName: '',
+                      guardianName: '',
+                      dob: '',
+                      gender: 'Male',
+                      phone: '',
+                      email: '',
+                      address: '',
+                      qualification: 'HSLC / 10th Passed',
+                      courseId: initialCourseCode || 'adca',
+                      affiliation: 'AMTRON Affiliated',
+                      batch: 'Morning (8:00 AM – 10:00 AM)',
+                      agreedToTerms: false
+                    });
+                  }}
                   className="px-2.5 py-1 rounded-md bg-[#ededf8] text-[#564241] font-label-sm text-xs hover:bg-[#e1e2ed]"
                 >
                   New Form
                 </button>
               </div>
 
-              {/* Reg number highlight */}
-              <div className="p-3.5 rounded-xl bg-[#FFF9E6] border border-[#FEA619] flex items-center justify-between">
-                <div>
-                  <span className="font-label-sm text-[#633d00] text-[10px] uppercase font-bold block">
-                    Temporary Registration / Enrollment ID
-                  </span>
-                  <span className="font-fee-numeric text-[#7d2628] text-lg font-bold">
-                    {submittedApplication.enrollmentNo}
-                  </span>
+              {/* Reg number & Candidate Photo highlight */}
+              <div className="p-3.5 rounded-xl bg-[#FFF9E6] border border-[#FEA619] flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  {submittedApplication.photoUrl ? (
+                    <img
+                      src={submittedApplication.photoUrl}
+                      alt={submittedApplication.name}
+                      className="w-16 h-20 rounded-lg object-cover border-2 border-[#7d2628] shadow-sm bg-white shrink-0"
+                    />
+                  ) : (
+                    <div className="w-16 h-20 rounded-lg bg-white border border-[#c2c5dd] flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-3xl text-[#535E6B]">person</span>
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <span className="font-label-sm text-[#633d00] text-[10px] uppercase font-bold block">
+                      Temporary Registration / Enrollment ID
+                    </span>
+                    <span className="font-fee-numeric text-[#7d2628] text-base sm:text-lg font-bold block truncate">
+                      {submittedApplication.enrollmentNo}
+                    </span>
+                    <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-[#DEF7EC] text-[#03543F] font-label-sm text-[10px] font-bold">
+                      <span className="material-symbols-outlined text-[12px]">verified</span>
+                      <span>Documents Uploaded</span>
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right shrink-0">
                   <span className="font-label-sm text-[#535E6B] text-[10px] block">Date</span>
                   <span className="font-body-sm text-[#191b23] font-bold text-xs">
                     {submittedApplication.timestamp}
@@ -244,13 +353,13 @@ export const AdmissionsScreen: React.FC<AdmissionsScreenProps> = ({
               <div className="grid grid-cols-2 gap-2.5 text-xs">
                 <div className="p-2.5 rounded-lg bg-[#f2f3fe]">
                   <span className="text-[#535E6B] text-[10px] block">Candidate Name</span>
-                  <span className="font-bold text-[#191b23] text-sm block">
+                  <span className="font-bold text-[#191b23] text-sm block uppercase">
                     {submittedApplication.name}
                   </span>
                 </div>
                 <div className="p-2.5 rounded-lg bg-[#f2f3fe]">
                   <span className="text-[#535E6B] text-[10px] block">Father / Guardian</span>
-                  <span className="font-bold text-[#191b23] text-sm block">
+                  <span className="font-bold text-[#191b23] text-sm block uppercase">
                     {submittedApplication.guardian || 'N/A'}
                   </span>
                 </div>
@@ -272,13 +381,109 @@ export const AdmissionsScreen: React.FC<AdmissionsScreenProps> = ({
                     +91 {submittedApplication.phone}
                   </span>
                 </div>
+                <div className="col-span-2 p-2.5 rounded-lg bg-[#f2f3fe]">
+                  <span className="text-[#535E6B] text-[10px] block">Permanent Address</span>
+                  <span className="font-semibold text-[#191b23] block">
+                    {submittedApplication.address}
+                  </span>
+                </div>
+              </div>
+
+              {/* Attached Uploaded Documents Section on Receipt */}
+              <div className="bg-[#FAF8FF] rounded-xl p-3.5 border border-[#d9e2ff] flex flex-col gap-2.5">
+                <span className="font-label-sm text-[#00163D] font-bold uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px] text-[#00163D]">attach_file</span>
+                  <span>Uploaded & Verified Documents (3 Files)</span>
+                </span>
+
+                <div className="flex flex-col gap-2">
+                  {/* Photo Item */}
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-white border border-[#ededf8]">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="material-symbols-outlined text-[#7d2628] text-[18px]">account_box</span>
+                      <div className="min-w-0">
+                        <span className="font-bold text-xs text-[#191b23] block truncate">
+                          Photo: {submittedApplication.photoName || 'candidate_passport_photo.jpg'}
+                        </span>
+                        <span className="text-[10px] text-[#03543F] font-semibold">Attached for Student Identity Card</span>
+                      </div>
+                    </div>
+                    {submittedApplication.photoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setPreviewDocModal({
+                          title: 'Candidate Passport Photograph',
+                          url: submittedApplication.photoUrl!,
+                          name: submittedApplication.photoName || 'candidate_passport_photo.jpg'
+                        })}
+                        className="px-2.5 py-1 rounded bg-[#EFF4FF] hover:bg-[#d9e2ff] text-[#00163D] text-[11px] font-bold shrink-0 transition-colors"
+                      >
+                        View Photo
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Qualification Item */}
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-white border border-[#ededf8]">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="material-symbols-outlined text-[#00163D] text-[18px]">school</span>
+                      <div className="min-w-0">
+                        <span className="font-bold text-xs text-[#191b23] block truncate">
+                          Qualification: {submittedApplication.qualificationDocName || 'highest_qualification.pdf'}
+                        </span>
+                        <span className="text-[10px] text-[#535E6B]">{submittedApplication.qualification}</span>
+                      </div>
+                    </div>
+                    {submittedApplication.qualificationDocUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setPreviewDocModal({
+                          title: 'Highest Qualification Document',
+                          url: submittedApplication.qualificationDocUrl!,
+                          name: submittedApplication.qualificationDocName || 'qualification_marksheet',
+                          isPdf: submittedApplication.qualificationDocIsPdf
+                        })}
+                        className="px-2.5 py-1 rounded bg-[#EFF4FF] hover:bg-[#d9e2ff] text-[#00163D] text-[11px] font-bold shrink-0 transition-colors"
+                      >
+                        View Doc
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Address Proof Item */}
+                  <div className="flex items-center justify-between p-2 rounded-lg bg-white border border-[#ededf8]">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="material-symbols-outlined text-[#FEA619] text-[18px]">home_pin</span>
+                      <div className="min-w-0">
+                        <span className="font-bold text-xs text-[#191b23] block truncate">
+                          Address Proof: {submittedApplication.addressProofName || 'address_proof.pdf'}
+                        </span>
+                        <span className="text-[10px] text-[#03543F] font-semibold">Valid Proof Attached</span>
+                      </div>
+                    </div>
+                    {submittedApplication.addressProofUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setPreviewDocModal({
+                          title: 'Permanent Address Proof',
+                          url: submittedApplication.addressProofUrl!,
+                          name: submittedApplication.addressProofName || 'address_proof',
+                          isPdf: submittedApplication.addressProofIsPdf
+                        })}
+                        className="px-2.5 py-1 rounded bg-[#EFF4FF] hover:bg-[#d9e2ff] text-[#00163D] text-[11px] font-bold shrink-0 transition-colors"
+                      >
+                        View Doc
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Instruction Note */}
               <div className="p-3 rounded-lg bg-[#FDF7F7] border border-[#dcc0be] text-xs text-[#564241] space-y-1">
                 <p className="font-bold text-[#7d2628]">Next Steps:</p>
-                <p>1. Please visit the IAIT Kaliabor Office (Near Post Office, Kaliabor, Nagaon) with original qualification marksheets and 2 passport photos.</p>
-                <p>2. Complete the admission fee token payment to lock your workstation seat.</p>
+                <p>1. Your digital documents (Passport Photo, Marksheet, Address Proof) have been registered in the IAIT admissions desk.</p>
+                <p>2. Please visit the IAIT Kaliabor Office (Near Post Office, Kaliabor, Nagaon) for original verification and seat allotment.</p>
                 <p className="text-[11px] text-[#5e0f14] italic mt-1 font-semibold">
                   * Exam Fees are not included in the tuition fee and will be notified prior to semester boards.
                 </p>
@@ -286,21 +491,23 @@ export const AdmissionsScreen: React.FC<AdmissionsScreenProps> = ({
 
               <div className="flex gap-2">
                 <button
+                  type="button"
                   onClick={() => {
                     onShowToast('Admission Receipt saved to device!');
                   }}
-                  className="flex-1 min-h-[44px] rounded-lg bg-[#00163D] text-white font-label-md text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm"
+                  className="flex-1 min-h-[44px] rounded-lg bg-[#00163D] text-white font-label-md text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
                 >
                   <span className="material-symbols-outlined text-[16px]">print</span>
                   <span>Print Receipt</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => {
                     setActiveSubTab('verify');
                     setSearchRegNo(submittedApplication.enrollmentNo);
                     handleSearchCertificate(submittedApplication.enrollmentNo);
                   }}
-                  className="flex-1 min-h-[44px] rounded-lg bg-[#7d2628] text-white font-label-md text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm"
+                  className="flex-1 min-h-[44px] rounded-lg bg-[#7d2628] text-white font-label-md text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all"
                 >
                   <span className="material-symbols-outlined text-[16px]">verified</span>
                   <span>Check Status</span>
@@ -524,26 +731,77 @@ export const AdmissionsScreen: React.FC<AdmissionsScreenProps> = ({
                 </div>
               </div>
 
-              {/* Step 4: Documents Required Checklist */}
-              <div className="bg-[#EFF4FF] rounded-xl p-3.5 border border-[#bcceff] flex flex-col gap-2">
-                <span className="font-label-sm text-[#00163D] font-bold uppercase tracking-wider text-[11px] flex items-center gap-1">
-                  <span className="material-symbols-outlined text-[16px] text-[#00163D]">folder_open</span>
-                  Documents to submit during verification:
-                </span>
-                <ul className="text-xs text-[#564241] space-y-1 pl-1">
-                  <li className="flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[14px] text-[#00163D]">check_box</span>
-                    <span>Self-attested copies of HSLC / HS / Degree Marksheets</span>
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[14px] text-[#00163D]">check_box</span>
-                    <span>2 Passport sized colored photographs</span>
-                  </li>
-                  <li className="flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[14px] text-[#00163D]">check_box</span>
-                    <span>Aadhaar Card or Valid Photo Identity Proof</span>
-                  </li>
-                </ul>
+              {/* Step 4: Required Document Uploads */}
+              <div className="bg-white rounded-xl p-4 border border-[#ededf8] shadow-xs flex flex-col gap-3">
+                <div className="flex items-center justify-between pb-2 border-b border-[#ededf8]">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-[#7d2628] text-white font-bold text-xs flex items-center justify-center">
+                      4
+                    </div>
+                    <div>
+                      <h3 className="font-title-md text-[#191b23] font-bold text-sm">
+                        Upload Required Documents
+                      </h3>
+                      <span className="text-[11px] text-[#535E6B] block">
+                        Mandatory documents for online admission verification & student ID
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Demo Data Autofill Shortcut for testing convenience */}
+                  <button
+                    type="button"
+                    id="btn-autofill-demo-admissions"
+                    onClick={handleLoadDemoData}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#EFF4FF] hover:bg-[#d9e2ff] text-[#00163D] font-label-sm text-[11px] font-bold border border-[#bcceff] transition-colors active:scale-95"
+                    title="Populate candidate info and mock documents for quick demonstration"
+                  >
+                    <span className="material-symbols-outlined text-[15px] text-[#FEA619]">magic_button</span>
+                    <span>Demo Data</span>
+                  </button>
+                </div>
+
+                {/* 1. Upload Photo */}
+                <FileUploadField
+                  id="upload-candidate-photo"
+                  label="Upload Candidate Passport Photo"
+                  sublabel="Recent passport-sized photo with white or clear background (JPG, PNG, WebP up to 5MB)"
+                  required={true}
+                  accept="image/jpeg,image/png,image/webp,image/jpg"
+                  icon="account_box"
+                  isPhoto={true}
+                  value={photoFile}
+                  onChange={setPhotoFile}
+                  helperText="JPG, PNG, WebP (Max 5MB) • Required for official Student ID Card"
+                />
+
+                {/* 2. Upload Highest Qualification */}
+                <FileUploadField
+                  id="upload-highest-qualification"
+                  label="Upload Highest Qualification"
+                  sublabel="HSLC (10th), Higher Secondary (10+2), or Degree marksheet / pass certificate (PDF or Image up to 10MB)"
+                  required={true}
+                  accept="image/jpeg,image/png,image/webp,.pdf,application/pdf"
+                  icon="school"
+                  isPhoto={false}
+                  value={qualificationDocFile}
+                  onChange={setQualificationDocFile}
+                  helperText="PDF, JPG, PNG (Max 10MB) • Self-attested copy or original scan"
+                />
+
+                {/* 3. Upload Address Proof */}
+                <FileUploadField
+                  id="upload-address-proof"
+                  label="Upload Address Proof"
+                  sublabel="Aadhaar Card, Voter ID, PRC, or Village Headman Certificate (PDF or Image up to 10MB)"
+                  required={true}
+                  accept="image/jpeg,image/png,image/webp,.pdf,application/pdf"
+                  icon="home_pin"
+                  isPhoto={false}
+                  value={addressProofFile}
+                  onChange={setAddressProofFile}
+                  helperText="PDF, JPG, PNG (Max 10MB) • Valid government identity proof"
+                />
               </div>
 
               {/* Declaration Checkbox */}
@@ -784,6 +1042,66 @@ export const AdmissionsScreen: React.FC<AdmissionsScreenProps> = ({
               </p>
             </div>
           ) : null}
+        </div>
+      )}
+
+      {/* Document Fullscreen Preview Modal */}
+      {previewDocModal && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
+            <div className="p-4 border-b border-[#ededf8] flex items-center justify-between bg-[#f8f9ff]">
+              <div>
+                <h4 className="font-title-md font-bold text-sm text-[#191b23]">
+                  {previewDocModal.title}
+                </h4>
+                <span className="text-[11px] text-[#535E6B] font-mono block truncate max-w-xs">
+                  {previewDocModal.name}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreviewDocModal(null)}
+                className="w-8 h-8 rounded-full bg-white border border-[#ededf8] flex items-center justify-center text-[#564241] hover:bg-[#ededf8] transition-colors"
+                title="Close document preview"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            <div className="p-4 overflow-y-auto flex items-center justify-center bg-[#191b23]/5 min-h-[300px]">
+              {previewDocModal.isPdf ? (
+                <div className="flex flex-col items-center justify-center p-6 text-center gap-3 bg-white rounded-xl border border-[#d9e2ff] w-full shadow-xs">
+                  <div className="w-16 h-16 rounded-full bg-[#EFF4FF] text-[#00163D] flex items-center justify-center">
+                    <span className="material-symbols-outlined text-3xl">picture_as_pdf</span>
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm text-[#191b23]">{previewDocModal.name}</p>
+                    <p className="text-xs text-[#535E6B] mt-1">Portable Document Format (PDF) Attached</p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#DEF7EC] text-[#03543F] text-xs font-bold">
+                    <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                    <span>Document Verified for Admission Record</span>
+                  </span>
+                </div>
+              ) : (
+                <img
+                  src={previewDocModal.url}
+                  alt={previewDocModal.title}
+                  className="max-h-[60vh] w-auto max-w-full rounded-lg object-contain shadow-sm border border-[#ededf8]"
+                />
+              )}
+            </div>
+
+            <div className="p-3 border-t border-[#ededf8] bg-[#f8f9ff] flex items-center justify-end">
+              <button
+                type="button"
+                onClick={() => setPreviewDocModal(null)}
+                className="px-4 py-2 rounded-xl bg-[#00163D] text-white font-label-md text-xs font-bold hover:bg-[#002868] transition-colors"
+              >
+                Close Preview
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

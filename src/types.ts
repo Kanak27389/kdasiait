@@ -66,6 +66,14 @@ export interface AdmissionApplication {
   affiliation: string;
   batch: string;
   timestamp: string;
+  photoUrl?: string;
+  photoName?: string;
+  qualificationDocName?: string;
+  qualificationDocUrl?: string;
+  qualificationDocIsPdf?: boolean;
+  addressProofName?: string;
+  addressProofUrl?: string;
+  addressProofIsPdf?: boolean;
 }
 
 export interface InquiryFormData {
