@@ -1,0 +1,199 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #5e0f14;
+  --color-primary-container: #7d2628;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #ff9491;
+  --color-primary-fixed: #ffdad8;
+  --color-primary-fixed-dim: #ffb3b0;
+
+  --color-secondary: #4c5e88;
+  --color-secondary-container: #bcceff;
+  --color-on-secondary: #ffffff;
+  --color-secondary-fixed: #d9e2ff;
+
+  --color-tertiary: #442900;
+  --color-tertiary-container: #633d00;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-fixed: #ffddb7;
+  --color-tertiary-fixed-dim: #ffb95e;
+  --color-on-tertiary-fixed: #2a1700;
+  --color-on-tertiary-container: #f7a00e;
+
+  --color-navy-deep: #00163D;
+  --color-navy-subtle: #EFF4FF;
+  --color-amber-highlight: #FEA619;
+  --color-amber-subtle: #FFF8EC;
+  --color-maroon-surface: #FDF7F7;
+  --color-maroon-container: #F4DCDD;
+  --color-maroon-border: #C98E90;
+
+  --color-surface: #faf8ff;
+  --color-surface-bright: #faf8ff;
+  --color-surface-card: #FFFFFF;
+  --color-surface-container: #ededf8;
+  --color-surface-container-low: #f2f3fe;
+  --color-surface-container-high: #e7e7f3;
+  --color-surface-container-highest: #e1e2ed;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-variant: #e1e2ed;
+
+  --color-table-row-highlight: #FFF9E6;
+  --color-table-row-alternate: #F8F9FF;
+
+  --color-text-primary: #1A1C1E;
+  --color-text-muted: #535E6B;
+  --color-on-surface: #191b23;
+  --color-on-surface-variant: #564241;
+
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2.5rem;
+  --spacing-margin-mobile: 1rem;
+  --spacing-gutter-mobile: 0.75rem;
+
+  --font-outfit: "Outfit", sans-serif;
+  --font-jakarta: "Plus Jakarta Sans", sans-serif;
+}
+
+body {
+  font-family: var(--font-jakarta);
+  color: var(--color-on-surface);
+  background-color: var(--color-surface);
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Typography styles matching design system */
+.font-display-lg,
+.font-display-lg-mobile,
+.font-headline-lg,
+.font-headline-lg-mobile,
+.font-headline-md,
+.font-headline-sm,
+.font-title-lg,
+.font-fee-numeric,
+.font-table-header {
+  font-family: var(--font-outfit);
+}
+
+.font-body-lg,
+.font-body-md,
+.font-body-sm,
+.font-label-lg,
+.font-label-md,
+.font-label-sm,
+.font-title-md,
+.font-table-cell {
+  font-family: var(--font-jakarta);
+}
+
+.text-fee-numeric {
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+.text-headline-lg-mobile {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+}
+
+.text-display-lg-mobile {
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+
+.text-headline-md {
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 600;
+}
+
+.text-headline-sm {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+}
+
+.text-title-lg {
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+.text-title-md {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
+.text-body-lg {
+  font-size: 16px;
+  line-height: 26px;
+}
+
+.text-body-md {
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.text-body-sm {
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.text-label-lg {
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0.01em;
+  font-weight: 600;
+}
+
+.text-label-md {
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+}
+
+.text-label-sm {
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+/* Material Symbols alignment */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  line-height: 1;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Scrollbar hide utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

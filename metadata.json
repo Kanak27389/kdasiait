@@ -1,0 +1,7 @@
+{
+  "name": "IAIT Kaliabor - Icon Academy of IT",
+  "description": "Premier Computer Training Center in Kaliabor, Assam offering AMTRON, IAPS & NCVT ITI certified vocational computer diplomas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
